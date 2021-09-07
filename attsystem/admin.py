@@ -1,7 +1,9 @@
+import time
+
 from django.contrib import admin
 from attsystem.models import EmployeeInformation, EmployeeMonthStatistics, Cal, EmployeeHoildayStatistics, \
     EmployeeOvertimeStatistics, EmployeeBustravelStatistics
-
+from .function import updateemp
 
 # Register your models here.
 class EmployeeInformationAdmin(admin.ModelAdmin):
@@ -11,11 +13,26 @@ class EmployeeInformationAdmin(admin.ModelAdmin):
     search_fields = ["namse", "dept"]
     list_filter = ["dept"]
     list_editable = ["time1", "time2", "time3", "time4", "att_type"]
+    # 增加自定义按钮
+    actions = ['custom_button']
+
+    def custom_button(self, request, queryset):
+        updateemp.getEmp()
+        self.message_user(request, "123")
+
+    # 显示的文本，与django admin一致
+    custom_button.short_description = '同步员工信息'
+    # icon，参考element-ui icon与https://fontawesome.com
+    custom_button.icon = 'el-icon-edit'
+    # 指定element-ui的按钮类型，参考https://element.eleme.cn/#/zh-CN/component/button
+    custom_button.type = 'primary'
+
 
 
 class EmployeeMonthStatisticsAdmin(admin.ModelAdmin):
     list_display = ["bus", "attendance_days", "act_attendance_days", "sat_attendance_days", "sun_attendance_days",
                     "holi_attendance_days", "usua_overtime", "a_holi"]
+    list_filter = ["months"]
 
 
 class CalAdmin(admin.ModelAdmin):
@@ -25,7 +42,6 @@ class CalAdmin(admin.ModelAdmin):
 class EmployeeHoildayStatisticsAdmin(admin.ModelAdmin):
     list_display = ["bus", "hoilday_type", "hoilday_start_time", "hoilday_stop_time", "hoilday_last_time", "dates"]
     raw_id_fields = ["bus"]
-
 
 
 class EmployeeOvertimeStatisticsAdmin(admin.ModelAdmin):

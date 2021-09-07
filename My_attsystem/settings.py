@@ -130,3 +130,5 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static1')
 # 隐藏右侧SimpleUI广告链接和使用分析
 SIMPLEUI_HOME_INFO = False
 SIMPLEUI_ANALYSIS = False
+
+

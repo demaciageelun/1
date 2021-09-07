@@ -276,7 +276,7 @@ class EmployeeInformation(models.Model):
 class EmployeeMonthStatistics(models.Model):
     bus = models.ForeignKey(EmployeeInformation, models.DO_NOTHING)
     years = models.IntegerField(blank=True, null=True)
-    months = models.CharField(max_length=255)
+    months = models.CharField(max_length=255, verbose_name="考勤月")
     attendance_days = models.FloatField(blank=True, null=True)
     act_attendance_days = models.FloatField(blank=True, null=True)
     sat_attendance_days = models.FloatField(blank=True, null=True)
