@@ -11,7 +11,7 @@ def get_daylis(year, month):
     day_lis = []
     for day in range(calendar.monthrange(year, month)[1] + 1)[1:]:
         day_lis.append('%s-%s-%s' % (year, '%02d' % month, '%02d' % (day)))
-    print(day_lis)
+    # print(day_lis)
     return day_lis
 
 
@@ -28,7 +28,7 @@ def checkinDetail():
         "scope": "resGroupSecret"
     }
     r = requests.post(url=url, data=json.dumps(d), headers=header)
-    print(r.json())
+    # print(r.json())
     accessToken = r.json()['data']['accessToken']
     # 获取当前年和月
     year = datetime.datetime.now().year
@@ -43,7 +43,7 @@ def checkinDetail():
         key.append(idl[1])
         value.append(idl[0])
     idd_list = dict(zip(key, value))
-    print(idd_list)
+    # print(idd_list)
     resp = ""
     for data in time_list:
         resp = detail_data_inter(accessToken, data, idd_list, 1)

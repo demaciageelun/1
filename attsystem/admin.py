@@ -1,3 +1,4 @@
+import json
 import time
 from django.http import HttpResponse, FileResponse
 from django.contrib import admin
@@ -33,16 +34,27 @@ class EmployeeInformationAdmin(admin.ModelAdmin):
 
 
 class EmployeeMonthStatisticsAdmin(admin.ModelAdmin):
-    list_display = ["bus", "years", "months", "attendance_days", "act_attendance_days", "sat_attendance_days",
+    list_display = ["bus", "部门", "岗位", "years", "months", "attendance_days", "act_attendance_days",
+                    "sat_attendance_days",
                     "sun_attendance_days",
                     "holi_attendance_days", "evection_days", "usua_overtime", "absence_time", "miss_chock_in_times",
                     "miss_chock_out_times", "late_times", "late_length", "early_leave_times", "early_leave_length",
                     "a_holi", "b_holi", "c_holi", "d_holi", "e_holi", "f_holi", "g_holi", "h_holi", "i_holi", "j_holi",
                     "k_holi", "l_holi", "act_holi_days"]
+
+    def 部门(self, obj):
+        return obj.bus.dept
+
+    def 岗位(self, obj):
+        return obj.bus.positi
+
     list_filter = ["bus", "years", "months"]
     # 增加自定义按钮
     actions = ['download']
     list_per_page = 20
+
+    def bus(self, obj):
+        return obj.bus.dept
 
     def download(self, request, queryset):
         # 创建excel
@@ -50,13 +62,17 @@ class EmployeeMonthStatisticsAdmin(admin.ModelAdmin):
         wb = Workbook()
         # 获取当前活跃的sheet，默认是第一个sheet
         ws = wb.active
-        row1 = ['员工姓名', '考勤年', '考勤月', '应出勤(天)', '实际出勤(天)', '周六出勤(天)', '周日出勤(天)', '节假日出勤(天)', '出差(天)', '平常加班(时)', '缺勤时间',
+        row1 = ['员工姓名', '考勤年', '考勤月', '部门', '岗位', '应出勤(天)', '实际出勤(天)', '周六出勤(天)', '周日出勤(天)', '节假日出勤(天)', '出差(天)',
+                '平常加班(时)', '缺勤时间',
                 '上班缺卡次数', '下班缺卡次数', '迟到次数', '迟到时长(分钟)', '早退次数', '早退时长(分钟)', '调休假(天)', '事假(天)', '病假(天)', '婚假(天)',
                 '产假(天)',
                 '陪产假(天)', '哺乳假(天)', '节育假(天)', '工伤假(天)', '看护假(天)', '丧假(天)', '产检假(天)', '实际请假(天)']
         ws.append(row1)
         for data in queryset:
+            print(data.bus.dept)
             row2 = [str(data.bus), str(data.years), str(data.months),
+                    str(data.bus.dept) if str(data.bus.dept) != "None" else "",
+                    str(data.bus.positi) if str(data.bus.positi) != "None" else "",
                     str(data.attendance_days) if str(data.attendance_days) != "None" else "",
                     str(data.act_attendance_days) if str(data.act_attendance_days) != "None" else "",
                     str(data.sat_attendance_days) if str(data.sat_attendance_days) != "None" else "",
@@ -111,12 +127,14 @@ class CalAdmin(admin.ModelAdmin):
 class EmployeeHoildayStatisticsAdmin(admin.ModelAdmin):
     list_display = ["bus", "hoilday_type", "hoilday_start_time", "hoilday_stop_time", "hoilday_last_time", "dates"]
     raw_id_fields = ["bus"]
+    list_filter = ["bus", "hoilday_type", "dates"]
 
 
 class EmployeeOvertimeStatisticsAdmin(admin.ModelAdmin):
     list_display = ["bus", "overtime_type", "dates",
                     "weeks", "overtime_start_time", "overtime_stop_time", "overtime_last_time"]
     raw_id_fields = ["bus"]
+    list_filter = ["bus", "overtime_type", "dates", "weeks"]
 
 
 class EmployeeBustravelStatisticsAdmin(admin.ModelAdmin):
@@ -127,8 +145,8 @@ class EmployeeBustravelStatisticsAdmin(admin.ModelAdmin):
 
 class CheckInDetailAdmin(admin.ModelAdmin):
     list_display = ["bus", "check_date", "weeks", "checkin_time"]
-    list_filter = ["bus", "check_date"]
-    actions = ["get_check_data"]
+    list_filter = ["bus", "weeks", "check_date"]
+    actions = ["get_check_data", "test"]
 
     def get_check_data(self, request, queryset):
         resp = getcheckdata.checkinDetail()
@@ -140,6 +158,15 @@ class CheckInDetailAdmin(admin.ModelAdmin):
     # 指定element-ui的按钮类型，参考https://element.eleme.cn/#/zh-CN/component/button
     get_check_data.type = 'primary'
 
+    def test(self, request, queryset):
+        pass
+
+    test.short_description = '测试按钮'
+    # icon，参考element-ui icon与https://fontawesome.com
+    test.icon = 'el-icon-edit'
+    # 指定element-ui的按钮类型，参考https://element.eleme.cn/#/zh-CN/component/button
+    test.type = 'primary'
+    test.acts_on_all = True
 
 
 admin.site.site_header = '谷登考勤系统后台'
