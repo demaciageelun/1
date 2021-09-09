@@ -105,10 +105,10 @@ class Cal(models.Model):
 
 
 class CheckInDetail(models.Model):
-    bus = models.ForeignKey('EmployeeInformation', models.DO_NOTHING)
-    checkin_time = models.DateTimeField()
-    weeks = models.IntegerField()
-    check_date = models.CharField(max_length=11)
+    bus = models.ForeignKey('EmployeeInformation', models.DO_NOTHING, verbose_name="员工名字")
+    check_date = models.DateField(verbose_name="刷卡日期")
+    checkin_time = models.TimeField(verbose_name="刷卡时间")
+    weeks = models.IntegerField(verbose_name="周几")
     years = models.IntegerField(blank=True, null=True)
     months = models.IntegerField(blank=True, null=True)
     days = models.IntegerField(blank=True, null=True)
@@ -116,6 +116,7 @@ class CheckInDetail(models.Model):
     class Meta:
         managed = False
         db_table = 'check_in_detail'
+        verbose_name = '刷卡流水表'
 
 
 class DjangoAdminLog(models.Model):
@@ -250,6 +251,10 @@ att_chioce = (
     (1, "记录考勤"),
     (2, "不统计考勤"),
 )
+is_job_chioce = (
+    (1, "在职"),
+    (2, "已离职"),
+)
 
 
 class EmployeeInformation(models.Model):
@@ -263,6 +268,7 @@ class EmployeeInformation(models.Model):
     time3 = models.TimeField(blank=True, null=True, verbose_name="午休结束时间")
     time4 = models.TimeField(blank=True, null=True, verbose_name="下班打卡时间")
     att_type = models.IntegerField(blank=True, null=True, verbose_name="出勤类型", choices=att_chioce)
+    is_job = models.IntegerField(blank=True, null=True, verbose_name="在职状态", choices=is_job_chioce)
 
     def __str__(self):
         return self.namse
@@ -274,36 +280,36 @@ class EmployeeInformation(models.Model):
 
 
 class EmployeeMonthStatistics(models.Model):
-    bus = models.ForeignKey(EmployeeInformation, models.DO_NOTHING)
-    years = models.IntegerField(blank=True, null=True)
+    bus = models.ForeignKey(EmployeeInformation, models.DO_NOTHING, verbose_name="员工名称")
+    years = models.IntegerField(blank=True, null=True, verbose_name="考勤年")
     months = models.CharField(max_length=255, verbose_name="考勤月")
-    attendance_days = models.FloatField(blank=True, null=True)
-    act_attendance_days = models.FloatField(blank=True, null=True)
-    sat_attendance_days = models.FloatField(blank=True, null=True)
-    sun_attendance_days = models.FloatField(blank=True, null=True)
-    holi_attendance_days = models.FloatField(blank=True, null=True)
-    evection_days = models.FloatField(blank=True, null=True)
-    usua_overtime = models.FloatField(blank=True, null=True)
-    absence_time = models.FloatField(blank=True, null=True)
-    miss_chock_in_times = models.IntegerField(blank=True, null=True)
-    miss_chock_out_times = models.IntegerField(blank=True, null=True)
-    late_times = models.IntegerField(blank=True, null=True)
-    late_length = models.FloatField(blank=True, null=True)
-    early_leave_times = models.IntegerField(blank=True, null=True)
-    early_leave_length = models.FloatField(blank=True, null=True)
-    a_holi = models.FloatField(blank=True, null=True)
-    b_holi = models.FloatField(blank=True, null=True)
-    c_holi = models.FloatField(blank=True, null=True)
-    d_holi = models.FloatField(blank=True, null=True)
-    e_holi = models.FloatField(blank=True, null=True)
-    f_holi = models.FloatField(blank=True, null=True)
-    g_holi = models.FloatField(blank=True, null=True)
-    h_holi = models.FloatField(blank=True, null=True)
-    i_holi = models.FloatField(blank=True, null=True)
-    j_holi = models.FloatField(blank=True, null=True)
-    k_holi = models.FloatField(blank=True, null=True)
-    l_holi = models.FloatField(blank=True, null=True)
-    act_holi_days = models.FloatField(blank=True, null=True)
+    attendance_days = models.FloatField(blank=True, null=True, verbose_name="应出勤(天)")
+    act_attendance_days = models.FloatField(blank=True, null=True, verbose_name="实际出勤(天)")
+    sat_attendance_days = models.FloatField(blank=True, null=True, verbose_name="周六出勤(天)")
+    sun_attendance_days = models.FloatField(blank=True, null=True, verbose_name="周日出勤(天)")
+    holi_attendance_days = models.FloatField(blank=True, null=True, verbose_name="节假日出勤(天)")
+    evection_days = models.FloatField(blank=True, null=True, verbose_name="出差(天)")
+    usua_overtime = models.FloatField(blank=True, null=True, verbose_name="平常加班(时)")
+    absence_time = models.FloatField(blank=True, null=True, verbose_name="缺勤时间")
+    miss_chock_in_times = models.IntegerField(blank=True, null=True, verbose_name="上班缺卡次数")
+    miss_chock_out_times = models.IntegerField(blank=True, null=True, verbose_name="下班缺卡次数")
+    late_times = models.IntegerField(blank=True, null=True, verbose_name="迟到次数")
+    late_length = models.FloatField(blank=True, null=True, verbose_name="迟到时长(分钟)")
+    early_leave_times = models.IntegerField(blank=True, null=True, verbose_name="早退次数")
+    early_leave_length = models.FloatField(blank=True, null=True, verbose_name="早退时长(分钟)")
+    a_holi = models.FloatField(blank=True, null=True, verbose_name="调休假(天)")
+    b_holi = models.FloatField(blank=True, null=True, verbose_name="事假(天)")
+    c_holi = models.FloatField(blank=True, null=True, verbose_name="病假(天)")
+    d_holi = models.FloatField(blank=True, null=True, verbose_name="婚假(天)")
+    e_holi = models.FloatField(blank=True, null=True, verbose_name="产假(天)")
+    f_holi = models.FloatField(blank=True, null=True, verbose_name="陪产假(天)")
+    g_holi = models.FloatField(blank=True, null=True, verbose_name="哺乳假(天)")
+    h_holi = models.FloatField(blank=True, null=True, verbose_name="节育假(天)")
+    i_holi = models.FloatField(blank=True, null=True, verbose_name="工伤假(天)")
+    j_holi = models.FloatField(blank=True, null=True, verbose_name="看护假(天)")
+    k_holi = models.FloatField(blank=True, null=True, verbose_name="丧假(天)")
+    l_holi = models.FloatField(blank=True, null=True, verbose_name="产检假(天)")
+    act_holi_days = models.FloatField(blank=True, null=True, verbose_name="实际请假(天)")
     overtime_surplus = models.FloatField(blank=True, null=True)
 
     class Meta:
@@ -325,7 +331,7 @@ class EmployeeOvertimeStatistics(models.Model):
     dates = models.DateField(blank=True, null=True, verbose_name="加班日期")
     overtime_start_time = models.DateTimeField(verbose_name="加班开始时间")
     overtime_stop_time = models.DateTimeField(verbose_name="加班结束时间")
-    overtime_last_time = models.FloatField(verbose_name="加班时长（小时）")
+    overtime_last_time = models.FloatField(verbose_name="加班时长(小时)")
     years = models.IntegerField(blank=True, null=True)
     months = models.IntegerField(blank=True, null=True)
     days = models.IntegerField(blank=True, null=True)
