@@ -3,22 +3,25 @@ from django.http import HttpResponse, FileResponse
 from django.template import loader
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import EmployeeInformation
+from .models import EmployeeInformation, CheckInDetail, EmployeeDaysStatistics
 from .function import decrypto
 import json
 
-from .function import holiday, overtime, bustravel
+from .function import holiday, overtime, bustravel, createmonthsta
 from .linshi import overtest, holitest
 
 
 # Create your views here.
 def index(request):
-    print(request)
-    file = open('static/HR01.xlsx', 'rb')
-    response = FileResponse(file)
-    response['Content-Type'] = 'application/octet-stream'
-    response['Content-Disposition'] = 'attachment;filename="BatchPayTemplate.xls"'
-    return response
+    # emp_days = EmployeeDaysStatistics()
+    # emp_days.bus_id = "20080103"
+    # emp_days.in_time = None
+    # emp_days.out_time = None
+    # emp_days.cal_id = 2
+    # emp_days.save()
+    createmonthsta.calcMonthSta()
+    data1 = '{"success": "true"}'
+    return HttpResponse(data1)
 
 
 def holi(request):
@@ -52,5 +55,3 @@ def hoiltest(request):
     holitest.insert_hoilday()
     data1 = '{"success": "true"}'
     return HttpResponse(data1)
-
-

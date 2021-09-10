@@ -98,6 +98,9 @@ class Cal(models.Model):
     weeks = models.IntegerField(blank=True, null=True, verbose_name="周几")
     kinds = models.IntegerField(blank=True, null=True, verbose_name="类型", choices=choice)
 
+    def __str__(self):
+        return str(self.times)
+
     class Meta:
         managed = False
         db_table = 'cal'
@@ -164,29 +167,25 @@ class DjangoSession(models.Model):
 
 
 class EmployeeDaysStatistics(models.Model):
-    bus_id = models.IntegerField()
-    in_time = models.TimeField(blank=True, null=True)
-    out_time = models.TimeField(blank=True, null=True)
-    holi_in_time = models.TimeField(blank=True, null=True)
-    holi_out_time = models.TimeField(blank=True, null=True)
-    hoil_last_time = models.FloatField(blank=True, null=True)
-    over_in_time = models.TimeField(blank=True, null=True)
-    over_out_time = models.TimeField(blank=True, null=True)
-    over_last_time = models.TimeField(blank=True, null=True)
-    years = models.IntegerField(blank=True, null=True)
-    months = models.IntegerField(blank=True, null=True)
-    days = models.IntegerField(blank=True, null=True)
-    weeks = models.IntegerField(blank=True, null=True)
-    is_late = models.IntegerField(blank=True, null=True)
-    is_leaveearly = models.IntegerField(blank=True, null=True)
-    late_time = models.IntegerField(blank=True, null=True)
-    leaveearly_time = models.IntegerField(blank=True, null=True)
-    compare_in_time = models.TimeField(blank=True, null=True)
-    compare_out_time = models.TimeField(blank=True, null=True)
+    bus = models.ForeignKey('EmployeeInformation', models.DO_NOTHING, verbose_name="员工名字")
+    in_time = models.TimeField(blank=True, null=True, verbose_name="上班刷卡时间")
+    out_time = models.TimeField(blank=True, null=True, verbose_name="下班刷卡时间")
+    holi_in_time = models.TimeField(blank=True, null=True, verbose_name="请假开始时间")
+    holi_out_time = models.TimeField(blank=True, null=True, verbose_name="假期结束时间")
+    hoil_last_time = models.FloatField(blank=True, null=True, verbose_name="假期持续时间")
+    over_in_time = models.DateTimeField(blank=True, null=True, verbose_name="加班开始时间")
+    over_out_time = models.DateTimeField(blank=True, null=True, verbose_name="加班结束时间")
+    over_last_time = models.FloatField(blank=True, null=True, verbose_name="加班持续时长")
+    is_late = models.IntegerField(blank=True, null=True, verbose_name="是否迟到")
+    is_leaveearly = models.IntegerField(blank=True, null=True, verbose_name="是否早退")
+    late_time = models.IntegerField(blank=True, null=True, verbose_name="迟到时长")
+    leaveearly_time = models.IntegerField(blank=True, null=True, verbose_name="早退时长")
+    cal = models.ForeignKey('Cal', models.DO_NOTHING, verbose_name="工作日历")
 
     class Meta:
         managed = False
         db_table = 'employee_days_statistics'
+        verbose_name = '每日出勤状况表'
 
 
 hoilday_type_choice = (

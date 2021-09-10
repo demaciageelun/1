@@ -3,7 +3,7 @@ import time
 from django.http import HttpResponse, FileResponse
 from django.contrib import admin
 from attsystem.models import EmployeeInformation, EmployeeMonthStatistics, Cal, EmployeeHoildayStatistics, \
-    EmployeeOvertimeStatistics, EmployeeBustravelStatistics, CheckInDetail
+    EmployeeOvertimeStatistics, EmployeeBustravelStatistics, CheckInDetail, EmployeeDaysStatistics
 from .function import updateemp, getcheckdata
 from openpyxl import Workbook
 
@@ -34,7 +34,7 @@ class EmployeeInformationAdmin(admin.ModelAdmin):
 
 
 class EmployeeMonthStatisticsAdmin(admin.ModelAdmin):
-    list_display = ["bus", "部门", "岗位", "years", "months", "attendance_days", "act_attendance_days",
+    list_display = ["bus", "dept", "positi", "years", "months", "attendance_days", "act_attendance_days",
                     "sat_attendance_days",
                     "sun_attendance_days",
                     "holi_attendance_days", "evection_days", "usua_overtime", "absence_time", "miss_chock_in_times",
@@ -42,13 +42,16 @@ class EmployeeMonthStatisticsAdmin(admin.ModelAdmin):
                     "a_holi", "b_holi", "c_holi", "d_holi", "e_holi", "f_holi", "g_holi", "h_holi", "i_holi", "j_holi",
                     "k_holi", "l_holi", "act_holi_days"]
 
-    def 部门(self, obj):
+    def dept(self, obj):
         return obj.bus.dept
 
-    def 岗位(self, obj):
+    def positi(self, obj):
         return obj.bus.positi
 
-    list_filter = ["bus", "years", "months"]
+    dept.short_description = "部门"
+    positi.short_description = "岗位"
+
+    list_filter = ["bus", "years", "months", "bus__dept"]
     # 增加自定义按钮
     actions = ['download']
     list_per_page = 20
@@ -169,6 +172,17 @@ class CheckInDetailAdmin(admin.ModelAdmin):
     test.acts_on_all = True
 
 
+class EmployeeDaysStatisticsAdmin(admin.ModelAdmin):
+    list_display = ["bus", "cal","cal_weeks", "in_time", "out_time", "holi_in_time", "holi_out_time", "hoil_last_time",
+                    "over_in_time", "over_out_time", "over_last_time", "is_late", "late_time", "is_leaveearly",
+                    "leaveearly_time"]
+    list_filter = ["bus", "cal", "cal__years", "cal__months", "cal__days"]
+
+    def cal_weeks(self, obj):
+        return obj.cal.weeks
+    cal_weeks.short_description = "周几"
+
+
 admin.site.site_header = '谷登考勤系统后台'
 admin.site.site_title = '谷登考勤系统后台'
 admin.site.index_title = '欢迎使用谷登考勤系统后台'
@@ -179,3 +193,4 @@ admin.site.register(EmployeeHoildayStatistics, EmployeeHoildayStatisticsAdmin)
 admin.site.register(EmployeeOvertimeStatistics, EmployeeOvertimeStatisticsAdmin)
 admin.site.register(EmployeeBustravelStatistics, EmployeeBustravelStatisticsAdmin)
 admin.site.register(CheckInDetail, CheckInDetailAdmin)
+admin.site.register(EmployeeDaysStatistics, EmployeeDaysStatisticsAdmin)
