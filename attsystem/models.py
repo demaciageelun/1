@@ -170,6 +170,8 @@ class EmployeeDaysStatistics(models.Model):
     bus = models.ForeignKey('EmployeeInformation', models.DO_NOTHING, verbose_name="员工名字")
     in_time = models.TimeField(blank=True, null=True, verbose_name="上班刷卡时间")
     out_time = models.TimeField(blank=True, null=True, verbose_name="下班刷卡时间")
+    judge_in_time = models.TimeField(blank=True, null=True, verbose_name="标定上班刷卡时间")
+    judge_out_time = models.TimeField(blank=True, null=True, verbose_name="标定下班刷卡时间")
     act_times = models.FloatField(blank=True, null=True, verbose_name="实际出勤(天)")
     holi_in_time = models.TimeField(blank=True, null=True, verbose_name="请假开始时间")
     holi_out_time = models.TimeField(blank=True, null=True, verbose_name="请假结束时间")

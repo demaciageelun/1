@@ -1,4 +1,6 @@
 # 创建月度报表
+import time
+
 from ..models import EmployeeInformation, EmployeeHoildayStatistics, Cal, CheckInDetail, EmployeeOvertimeStatistics, \
     EmployeeDaysStatistics
 import datetime
@@ -63,17 +65,62 @@ def calcMonthSta():
                         over_last_time=over_last_time)
                 # 获取请假数据
                 holi_data = EmployeeHoildayStatistics.objects.filter(bus_id=emps.bus_id, dates=cals.times)
-                # 存在一天请多次假的情况
+                # 存在一天请多次假的情况，有请假的，当天出勤要减去请假时长，并且判断上下班迟到早退的时间也随之变化
                 if len(holi_data) != 0:
                     holi_last_time = 0
+                    holi_judeg = []
                     for holis in holi_data:
+                        holi_judeg.append(holis.hoilday_start_time)
+                        holi_judeg.append(holis.hoilday_stop_time)
                         holi_last_time += holis.hoilday_last_time
+                    holi_judeg.sort()
+                    # 计算上下班刷卡的标定时间
+                    if holi_last_time >= 1:
+                        # 全天请假，不考虑上下班刷卡时间
+                        pass
+                    else:
+                        # 第一种，请假时间在time1和time4之间的，以time1和time4为准
+                        if holi_judeg[0] > emps.time1 and holi_judeg[len(holi_judeg) - 1] < emps.time4:
+                            check_intime = emps.time1
+                            check_outtime = emps.time4
+                        elif holi_judeg[0] <= emps.time1 and holi_judeg[len(holi_judeg) - 1] < emps.time2:
+                            check_intime = holi_judeg[len(holi_judeg) - 1]
+                            check_outtime = emps.time4
+                        elif holi_judeg[0] <= emps.time1 and holi_judeg[len(holi_judeg) - 1] >= emps.time2 and \
+                                holi_judeg[len(holi_judeg) - 1] <= emps.time3:
+                            check_intime = emps.time3
+                            check_outtime = emps.time4
+                        elif holi_judeg[0] <= emps.time1 and holi_judeg[len(holi_judeg) - 1] > emps.time3 and \
+                                holi_judeg[len(holi_judeg) - 1] < emps.time4:
+                            check_intime = holi_judeg[len(holi_judeg) - 1]
+                            check_outtime = emps.time4
+                        elif holi_judeg[len(holi_judeg) - 1] >= emps.time4 and holi_judeg[0] > emps.time1 and \
+                                holi_judeg[0] < emps.time2:
+                            check_intime = emps.time1
+                            check_outtime = holi_judeg[0]
+                        elif holi_judeg[len(holi_judeg) - 1] >= emps.time4 and holi_judeg[0] > emps.time2 and \
+                                holi_judeg[0] <= emps.time3:
+                            check_intime = emps.time1
+                            check_outtime = emps.time2
+                        elif holi_judeg[len(holi_judeg) - 1] >= emps.time4 and holi_judeg[0] > emps.time3 and \
+                                holi_judeg[0] < emps.time4:
+                            check_intime = emps.time1
+                            check_outtime = holi_judeg[0]
+                            pass
+
                     EmployeeDaysStatistics.objects.filter(bus_id=emps.bus_id, cal_id=cals.id).update(
                         holi_in_time=holi_data[0].hoilday_start_time,
                         holi_out_time=holi_data[len(holi_data) - 1].hoilday_stop_time,
-                        hoil_last_time=holi_last_time, act_times=1 - holi_last_time)
+                        hoil_last_time=holi_last_time, act_times=1 - holi_last_time, judge_in_time=check_intime,
+                        judge_out_time=check_outtime)
+                # 没有请假的额，则当天出勤为1
                 else:
-                    EmployeeDaysStatistics.objects.filter(bus_id=emps.bus_id, cal_id=cals.id).update(act_times=1)
+                    # 刷卡标定时间
+                    check_intime = emps.time1
+                    check_outtime = emps.time4
+                    EmployeeDaysStatistics.objects.filter(bus_id=emps.bus_id, cal_id=cals.id).update(act_times=1,
+                                                                                                     judge_in_time=check_intime,
+                                                                                                     judge_out_time=check_outtime)
     # 第四步、获取请假数据或者出差数据
     # 第五步、获取加班信息
     # 第六步、遍历人员每日信息，汇总成一整条数据，并写入月度汇总表

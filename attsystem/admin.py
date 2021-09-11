@@ -173,7 +173,8 @@ class CheckInDetailAdmin(admin.ModelAdmin):
 
 
 class EmployeeDaysStatisticsAdmin(admin.ModelAdmin):
-    list_display = ["bus", "cal", "cal_weeks","act_times", "in_time", "out_time", "holi_in_time", "holi_out_time", "hoil_last_time",
+    list_display = ["bus", "cal", "cal_weeks", "act_times", "in_time", "out_time", "judge_in_time", "judge_out_time",
+                    "holi_in_time", "holi_out_time", "hoil_last_time",
                     "over_in_time", "over_out_time", "over_last_time", "is_late", "late_time", "is_leaveearly",
                     "leaveearly_time"]
     list_filter = ["bus", "cal", "cal__years", "cal__months", "cal__days"]
