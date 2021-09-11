@@ -10,13 +10,13 @@ from openpyxl import Workbook
 
 # Register your models here.
 class EmployeeInformationAdmin(admin.ModelAdmin):
-    list_display = ["bus_id", "namse", "dept", "positi", "openid", "time1", "time2", "time3", "time4", "att_type",
-                    "is_job"]
-    list_display_links = ["namse", "dept", "positi", "openid"]
+    list_display = ["bus_id", "namse", "dept", "positi", "time1", "time2", "time3", "time4", "att_type",
+                    "is_job", "entry_date", "leave_date"]
+    list_display_links = ["namse", "dept", "positi"]
     list_per_page = 20
     search_fields = ["bus_id", "namse", "dept"]
     list_filter = ["dept", "att_type", "is_job"]
-    list_editable = ["time1", "time2", "time3", "time4", "att_type", "is_job"]
+    list_editable = ["time1", "time2", "time3", "time4", "att_type", "is_job", "entry_date", "leave_date"]
     # 增加自定义按钮
     actions = ['update']
 
@@ -173,13 +173,14 @@ class CheckInDetailAdmin(admin.ModelAdmin):
 
 
 class EmployeeDaysStatisticsAdmin(admin.ModelAdmin):
-    list_display = ["bus", "cal","cal_weeks", "in_time", "out_time", "holi_in_time", "holi_out_time", "hoil_last_time",
+    list_display = ["bus", "cal", "cal_weeks","act_times", "in_time", "out_time", "holi_in_time", "holi_out_time", "hoil_last_time",
                     "over_in_time", "over_out_time", "over_last_time", "is_late", "late_time", "is_leaveearly",
                     "leaveearly_time"]
     list_filter = ["bus", "cal", "cal__years", "cal__months", "cal__days"]
 
     def cal_weeks(self, obj):
         return obj.cal.weeks
+
     cal_weeks.short_description = "周几"
 
 

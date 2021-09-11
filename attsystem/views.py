@@ -7,7 +7,7 @@ from .models import EmployeeInformation, CheckInDetail, EmployeeDaysStatistics
 from .function import decrypto
 import json
 
-from .function import holiday, overtime, bustravel, createmonthsta
+from .function import holiday, overtime, bustravel, createmonthsta,testdata
 from .linshi import overtest, holitest
 
 
@@ -20,6 +20,7 @@ def index(request):
     # emp_days.cal_id = 2
     # emp_days.save()
     createmonthsta.calcMonthSta()
+    # testdata.getTests()
     data1 = '{"success": "true"}'
     return HttpResponse(data1)
 

@@ -170,12 +170,13 @@ class EmployeeDaysStatistics(models.Model):
     bus = models.ForeignKey('EmployeeInformation', models.DO_NOTHING, verbose_name="员工名字")
     in_time = models.TimeField(blank=True, null=True, verbose_name="上班刷卡时间")
     out_time = models.TimeField(blank=True, null=True, verbose_name="下班刷卡时间")
+    act_times = models.FloatField(blank=True, null=True, verbose_name="实际出勤(天)")
     holi_in_time = models.TimeField(blank=True, null=True, verbose_name="请假开始时间")
-    holi_out_time = models.TimeField(blank=True, null=True, verbose_name="假期结束时间")
-    hoil_last_time = models.FloatField(blank=True, null=True, verbose_name="假期持续时间")
+    holi_out_time = models.TimeField(blank=True, null=True, verbose_name="请假结束时间")
+    hoil_last_time = models.FloatField(blank=True, null=True, verbose_name="请假持续时间(天)")
     over_in_time = models.DateTimeField(blank=True, null=True, verbose_name="加班开始时间")
     over_out_time = models.DateTimeField(blank=True, null=True, verbose_name="加班结束时间")
-    over_last_time = models.FloatField(blank=True, null=True, verbose_name="加班持续时长")
+    over_last_time = models.FloatField(blank=True, null=True, verbose_name="加班持续时长(小时)")
     is_late = models.IntegerField(blank=True, null=True, verbose_name="是否迟到")
     is_leaveearly = models.IntegerField(blank=True, null=True, verbose_name="是否早退")
     late_time = models.IntegerField(blank=True, null=True, verbose_name="迟到时长")
@@ -268,6 +269,8 @@ class EmployeeInformation(models.Model):
     time4 = models.TimeField(blank=True, null=True, verbose_name="下班打卡时间")
     att_type = models.IntegerField(blank=True, null=True, verbose_name="出勤类型", choices=att_chioce)
     is_job = models.IntegerField(blank=True, null=True, verbose_name="在职状态", choices=is_job_chioce)
+    entry_date = models.DateField(blank=True, null=True, verbose_name="入职日期")
+    leave_date = models.DateField(blank=True, null=True, verbose_name="离职日期")
 
     def __str__(self):
         return self.namse
