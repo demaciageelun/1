@@ -136,11 +136,37 @@ def insertHoli(bus_id, types, btime, etime, last_time, years, months, days, week
     # 判断请假日期类型，是工作日请假，还是周六请假，还是包含周日的请假。通过查询工作日历表，来确定今天的工作状态。
     lists = Cal.objects.filter(times=date)
     hoilday_day_type = lists[0].kinds
-    resp = EmployeeHoildayStatistics.objects.create(bus_id=bus_id, hoilday_type=types,
-                                                    hoilday_day_type=hoilday_day_type,
-                                                    hoilday_start_time=btime,
-                                                    hoilday_stop_time=etime, hoilday_last_time=last_time, years=years,
-                                                    months=months, days=days, weeks=weeks, dates=date)
+
+    bus_id = bus_id,
+    hoilday_type = types,
+    hoilday_day_type = hoilday_day_type,
+    hoilday_start_time = btime,
+    hoilday_stop_time = etime,
+    hoilday_last_time = last_time,
+    years = years,
+    months = months,
+    days = days,
+    weeks = weeks,
+    dates = date
+    resp = EmployeeHoildayStatistics.objects.update_or_create(
+        defaults={
+            'bus_id': bus_id,
+            'hoilday_type': types,
+            'hoilday_day_type': hoilday_day_type,
+            'hoilday_start_time': btime,
+            'hoilday_stop_time': etime,
+            'hoilday_last_time': last_time,
+            'years': years,
+            'months': months,
+            'days': days,
+            'weeks': weeks,
+            'dates': date},
+        bus_id=bus_id,
+        hoilday_type=types,
+        hoilday_start_time=btime,
+        hoilday_stop_time=etime,
+        dates=date
+    )
     print(resp)
 
 

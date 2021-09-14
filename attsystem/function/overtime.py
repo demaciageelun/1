@@ -45,9 +45,21 @@ def overTimeInfo(data):
 
 
 def insertOver(bus_id, types, btime, etime, last_time, years, months, days, weeks, date):
-    resp = EmployeeOvertimeStatistics.objects.create(bus_id=bus_id, overtime_type=types,
-                                                     overtime_start_time=btime,
-                                                     overtime_stop_time=etime, overtime_last_time=last_time,
-                                                     years=years,
-                                                     months=months, days=days, weeks=weeks, dates=date)
+    resp = EmployeeOvertimeStatistics.objects.update_or_create(
+        defaults={'bus_id': bus_id,
+                  'overtime_type': types,
+                  'overtime_start_time': btime,
+                  'overtime_stop_time': etime,
+                  'overtime_last_time': last_time,
+                  'years': years,
+                  'months': months,
+                  'days': days,
+                  'weeks': weeks,
+                  'dates': date},
+        bus_id=bus_id,
+        overtime_type=types,
+        overtime_start_time=btime,
+        overtime_stop_time=etime,
+        dates=date
+    )
     print(resp)

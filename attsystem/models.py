@@ -166,6 +166,18 @@ class DjangoSession(models.Model):
         db_table = 'django_session'
 
 
+check_in_result_choice = (
+    (1, "正常"),
+    (2, "迟到"),
+    (3, "缺卡"),
+)
+check_out_result_choice = (
+    (1, "正常"),
+    (2, "早退"),
+    (3, "缺卡"),
+)
+
+
 class EmployeeDaysStatistics(models.Model):
     bus = models.ForeignKey('EmployeeInformation', models.DO_NOTHING, verbose_name="员工名字")
     in_time = models.TimeField(blank=True, null=True, verbose_name="上班刷卡时间")
@@ -179,10 +191,13 @@ class EmployeeDaysStatistics(models.Model):
     over_in_time = models.DateTimeField(blank=True, null=True, verbose_name="加班开始时间")
     over_out_time = models.DateTimeField(blank=True, null=True, verbose_name="加班结束时间")
     over_last_time = models.FloatField(blank=True, null=True, verbose_name="加班持续时长(小时)")
-    is_late = models.IntegerField(blank=True, null=True, verbose_name="是否迟到")
-    is_leaveearly = models.IntegerField(blank=True, null=True, verbose_name="是否早退")
+    check_in_result = models.IntegerField(blank=True, null=True, verbose_name="上班签到结果",
+                                          choices=check_in_result_choice)
+    check_out_result = models.IntegerField(blank=True, null=True, verbose_name="下班签到结果",
+                                           choices=check_out_result_choice)
     late_time = models.IntegerField(blank=True, null=True, verbose_name="迟到时长")
     leaveearly_time = models.IntegerField(blank=True, null=True, verbose_name="早退时长")
+    absence_times = models.IntegerField(blank=True, null=True, verbose_name="缺勤次数")
     cal = models.ForeignKey('Cal', models.DO_NOTHING, verbose_name="工作日历")
 
     class Meta:
