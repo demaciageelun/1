@@ -222,24 +222,25 @@ def calcDaliySta():
     # 第四步、获取请假数据或者出差数据
     # 第五步、获取加班信息
     # 第六步、遍历人员每日信息，汇总成一整条数据，并写入月度汇总表
+    # 遍历出差数据，如果当日有出差数据，则将
 
 
 def monthStatic():
     # 上个月的年和月
     date = arrow.now().shift(months=-1)
     # 上上个月最后一天
-    arrow_date = arrow.now().shift(months=-1, days=-14)
+    arrow_date = arrow.now().shift(months=-1, days=-15)
 
     # 计算当月应考勤天
-    cal_data = Cal.objects.filter(years=date.year, months=date.month).exclude(weeks=7).count()
+    cal_data = Cal.objects.filter(years=date.year, months=date.month).exclude(kinds__in=(3, 4)).count()
     # 查询所有记录考勤的人员，遍历。去除掉上个月已经离职的人员。
     # 生成上上月最后一天的日期。
     emp_data = EmployeeInformation.objects.filter(
         Q(att_type=1),
+        # Q(is_job=1),
         Q(leave_date__isnull=True) | Q(leave_date__gt=arrow_date.date())
     )
     for emps in emp_data:
-        print(emps.namse)
         # 遍历每日信息表，汇总实际出勤，周六出勤、周日出勤、平时加班、迟到、早退等信息
         # 实际出勤天
         act_attendance_days = EmployeeDaysStatistics.objects.filter(bus_id=emps.bus_id,
@@ -340,38 +341,36 @@ def monthStatic():
             act_holi_days = act_holi_days[0]["sum"]
         else:
             act_holi_days = 0
-        defates = {'bus_id': emps.bus_id,
-                   'years': date.year,
-                   'months': date.month,
-                   'attendance_days': cal_data,
-                   'act_attendance_days': act_attendance_days,
-                   'sat_attendance_days': sat_attendance_days,
-                   'sun_attendance_days': sun_attendance_days,
-                   'holi_attendance_days': holi_attendance_days,
-                   'usua_overtime': usua_overtime,
-                   'miss_chock_in_times': miss_chock_in_times,
-                   'miss_chock_out_times': miss_chock_out_times,
-                   'late_times': late_times,
-                   'late_length': late_length,
-                   'early_leave_times': early_leave_times,
-                   'early_leave_length': early_leave_length,
-                   'a_holi': a_holi,
-                   'b_holi': b_holi,
-                   'c_holi': c_holi,
-                   'd_holi': d_holi,
-                   'e_holi': e_holi,
-                   'f_holi': f_holi,
-                   'g_holi': g_holi,
-                   'h_holi': h_holi,
-                   'i_holi': i_holi,
-                   'j_holi': j_holi,
-                   'k_holi': k_holi,
-                   'l_holi': l_holi,
-                   'act_holi_days': act_holi_days
-                   }
-        print(defates)
         EmployeeMonthStatistics.objects.update_or_create(
-            defaults=defates,
+            defaults={'bus_id': emps.bus_id,
+                      'years': date.year,
+                      'months': date.month,
+                      'attendance_days': cal_data,
+                      'act_attendance_days': act_attendance_days,
+                      'sat_attendance_days': sat_attendance_days,
+                      'sun_attendance_days': sun_attendance_days,
+                      'holi_attendance_days': holi_attendance_days,
+                      'usua_overtime': usua_overtime,
+                      'miss_chock_in_times': miss_chock_in_times,
+                      'miss_chock_out_times': miss_chock_out_times,
+                      'late_times': late_times,
+                      'late_length': late_length,
+                      'early_leave_times': early_leave_times,
+                      'early_leave_length': early_leave_length,
+                      'a_holi': a_holi,
+                      'b_holi': b_holi,
+                      'c_holi': c_holi,
+                      'd_holi': d_holi,
+                      'e_holi': e_holi,
+                      'f_holi': f_holi,
+                      'g_holi': g_holi,
+                      'h_holi': h_holi,
+                      'i_holi': i_holi,
+                      'j_holi': j_holi,
+                      'k_holi': k_holi,
+                      'l_holi': l_holi,
+                      'act_holi_days': act_holi_days
+                      },
             bus_id=emps.bus_id,
             years=date.year,
             months=date.month,

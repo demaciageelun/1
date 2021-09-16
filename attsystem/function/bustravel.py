@@ -18,7 +18,7 @@ def bustravelInfo(data):
     try:
         # 取企业员工工号
         bus_id = data["data"]["basicInfo"]["myPersonInfo"]["jobNo"]
-        emp = EmployeeInformation.objects.filter(bus_id=bus_id)
+        emp = EmployeeInformation.objects.filter(bus_id=bus_id, att_type=1)
         if len(emp) > 0:  # 判断这个员工是否属于员工表中的科室人员，该系统只统计科室人员信息。
             # 取出人员信息，获取该人员的理论打卡时间，来计算每个出差日的出差时间。
             time1 = emp[0].time1
@@ -27,7 +27,14 @@ def bustravelInfo(data):
             time4 = emp[0].time4
             # 取出请假列表值
             widget_value = data["data"]["formInfo"]["detailMap"]["_S_INT_ON_BUSINESS_DETAILED"]["widgetValue"]
-
+            # 云之家流水号
+            serial = data["data"]["formInfo"]["widgetMap"]["_S_SERIAL"]["value"]
+            # 外出类别，区分出差还是公干
+            go_out_type_list = {
+                "AaBaCcDd": "1",
+                "EeFfGgHh": "2",
+            }
+            go_out_type = go_out_type_list[data["data"]["formInfo"]["widgetMap"]["Ra_1"]["value"]]
             # 可能有多行，循环取出
             for wv in widget_value:
                 # 出差开始时间
@@ -55,20 +62,21 @@ def bustravelInfo(data):
                     if begin_travel_days > 0:  # 排除有人在下班后的时间申请出差
                         insertBustravel(bus_id, begin_time[11:], time4, begin_travel_days,
                                         date1.year,
-                                        date1.month, date1.day, date1.weekday() + 1, begin_time[:10])
+                                        date1.month, date1.day, date1.weekday() + 1, begin_time[:10], serial,
+                                        go_out_type)
                     #     根据data_list遍历写入出差信息表，中间时长均为8小时
                     for data in data_list:
                         print(data.times)
                         insertBustravel(bus_id, time1, time4, 1,
                                         data.years,
-                                        data.months, data.days, data.weeks, data.times)
+                                        data.months, data.days, data.weeks, data.times, serial, go_out_type)
                     # 结束那天调用下函数
                     # 判断出差结束当天出差了多久
                     end_travel_days = lastDay(time1, time2, time3, time4, end_time)
                     if end_travel_days > 0:
                         insertBustravel(bus_id, time1, end_time[11:], end_travel_days,
                                         date2.year,
-                                        date2.month, date2.day, date2.weekday() + 1, end_time[:10])
+                                        date2.month, date2.day, date2.weekday() + 1, end_time[:10], serial, go_out_type)
 
                 # =1表示开始和结束是连续两天
                 elif sub_data == 1:
@@ -78,19 +86,20 @@ def bustravelInfo(data):
                     if begin_travel_days > 0:  # 排除有人在下班后的时间申请出差
                         insertBustravel(bus_id, begin_time[11:], time4, begin_travel_days,
                                         date1.year,
-                                        date1.month, date1.day, date1.weekday() + 1, begin_time[:10])
+                                        date1.month, date1.day, date1.weekday() + 1, begin_time[:10], serial,
+                                        go_out_type)
                     # 结束那天调用下函数
                     # 判断出差结束当天出差了多久
                     end_travel_days = lastDay(time1, time2, time3, time4, end_time)
                     if end_travel_days > 0:
                         insertBustravel(bus_id, time1, end_time[11:], end_travel_days,
                                         date2.year,
-                                        date2.month, date2.day, date2.weekday() + 1, end_time[:10])
+                                        date2.month, date2.day, date2.weekday() + 1, end_time[:10], serial, go_out_type)
                 # =0表示开始和结束时间是同一天
                 else:
                     insertBustravel(bus_id, begin_time[11:], end_time[11:], travel_days,
                                     date1.year,
-                                    date1.month, date1.day, date1.weekday() + 1, begin_time[:10])
+                                    date1.month, date1.day, date1.weekday() + 1, begin_time[:10], serial, go_out_type)
         else:  # 不是科室人员，不统计请假信息。
             pass
     except Exception as e:
@@ -149,10 +158,24 @@ def lastDay(time1, time2, time3, time4, etime):
     return end_travel_days
 
 
-def insertBustravel(bus_id, btime, etime, last_time, years, months, days, weeks, date):
-    resp = EmployeeBustravelStatistics.objects.create(bus_id=bus_id,
-                                                      bustravel_start_time=btime,
-                                                      bustravel_stop_time=etime, bustravel_last_time=last_time,
-                                                      years=years,
-                                                      months=months, days=days, weeks=weeks, dates=date)
+def insertBustravel(bus_id, btime, etime, last_time, years, months, days, weeks, date, serial, go_out_type):
+    resp = EmployeeBustravelStatistics.objects.update_or_create(
+        defaults={
+            'bus_id': bus_id,
+            'bustravel_start_time': btime,
+            'bustravel_stop_time': etime,
+            'bustravel_last_time': last_time,
+            'years': years,
+            'months': months,
+            'days': days,
+            'weeks': weeks,
+            'dates': date,
+            'serial': serial,
+            'go_out_type': go_out_type
+        },
+        bus_id=bus_id,
+        bustravel_start_time=btime,
+        bustravel_stop_time=etime,
+        dates=date
+    )
     print(resp)

@@ -1,3 +1,4 @@
+# 销假单
 # 调休假5f212e529b3004000175dccc
 # 事假5f212e529b3004000175dccd
 # 病假5f212e529b3004000175dcce   #
@@ -39,7 +40,7 @@ def transTime(times):
 
 
 # 接收views接收到的请假信息，处理存入请假信息表中
-def proLeaveInfor(data):
+def reportbackInfor(data):
     print(data)
     try:
         # 取企业员工工号
@@ -52,19 +53,25 @@ def proLeaveInfor(data):
             time3 = emp[0].time3
             time4 = emp[0].time4
             # 取出请假列表值
-            widget_value = data["data"]["formInfo"]["detailMap"]["_S_INT_LEAVE_DETAILED"]["widgetValue"]
+            widget_value = data["data"]["formInfo"]["detailMap"]["_S_INT_RESUMPTION_LEAVE_DETAILED"]["widgetValue"]
             # 取出流水号
             serial = data["data"]["formInfo"]["widgetMap"]["_S_SERIAL"]["value"]
+            # 取出原始请假单号
+            ori_holi_report = data["data"]["formInfo"]["widgetMap"]["_S_INT_RESUMPTION_LEAVE_RELATED"]["value"][0][
+                "serialNo"]
+            # 将请假表的信息删除，然后新增请假信息。
+            delete_data = EmployeeHoildayStatistics.objects.filter(serial=ori_holi_report)
+            delete_data.delete()
             # 可能有多行，循环取出
             for wv in widget_value:
                 # 请假开始时间
-                begin_time = transTime(wv["_S_INT_LEAVE_TIME"][0])
+                begin_time = transTime(wv["_S_INT_RESUMPTION_LEAVE_TIME"][0])
                 # 请假结束时间
-                end_time = transTime(wv["_S_INT_LEAVE_TIME"][1])
+                end_time = transTime(wv["_S_INT_RESUMPTION_LEAVE_TIME"][1])
                 # 请假时长（天）
-                leave_days = wv["_S_INT_LEAVE_DAYS"]
+                leave_days = wv["_S_INT_RESUMPTION_LEAVE_DAYS"]
                 # 请假类型
-                leave_type = wv["_S_INT_LEAVE_TYPE"]
+                leave_type = wv["_S_INT_RESUMPTION_LEAVE_TYPE"]
                 # 判断请假开始时间和请假结束时间之间是否隔天,有隔天的，把隔天的请假信息也写入请假表中，请假时间为8小时，首尾两天分别填写。
                 date1 = time.strptime(begin_time[:10], "%Y-%m-%d")
                 date2 = time.strptime(end_time[:10], "%Y-%m-%d")
@@ -161,8 +168,9 @@ def insertHoli(bus_id, types, btime, etime, last_time, years, months, days, week
     )
     print(resp)
 
+    # 判断第一天的请假时长
 
-# 判断第一天的请假时长
+
 def firstDay(time1, time2, time3, time4, btime):
     times1 = time.mktime(time.strptime(btime[:10] + " " + str(time1), "%Y-%m-%d %H:%M:%S"))
     times2 = time.mktime(time.strptime(btime[:10] + " " + str(time2), "%Y-%m-%d %H:%M:%S"))
@@ -182,8 +190,9 @@ def firstDay(time1, time2, time3, time4, btime):
         begin_leave_days = 0
     return begin_leave_days
 
+    # 判断最后一天的请假时长
 
-# 判断最后一天的请假时长
+
 def lastDay(time1, time2, time3, time4, etime):
     times1 = time.mktime(time.strptime(etime[:10] + " " + str(time1), "%Y-%m-%d %H:%M:%S"))
     times2 = time.mktime(time.strptime(etime[:10] + " " + str(time2), "%Y-%m-%d %H:%M:%S"))

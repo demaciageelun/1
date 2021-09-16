@@ -142,7 +142,8 @@ class EmployeeOvertimeStatisticsAdmin(admin.ModelAdmin):
 
 class EmployeeBustravelStatisticsAdmin(admin.ModelAdmin):
     list_display = ["bus", "dates",
-                    "weeks", "bustravel_start_time", "bustravel_stop_time", "bustravel_last_time"]
+                    "weeks", "bustravel_start_time", "bustravel_stop_time", "bustravel_last_time", "go_out_type",
+                    "serial"]
     raw_id_fields = ["bus"]
 
 

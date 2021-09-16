@@ -22,8 +22,8 @@ def overTimeInfo(data):
         # 取企业员工工号
         # *****员工号第一个数字为0的需要重新测试*****陈勇
         bus_id = data["data"]["basicInfo"]["myPersonInfo"]["jobNo"]
-        emp = EmployeeInformation.objects.filter(bus_id=bus_id)
-        if len(emp) > 0:  # 判断这个员工是否属于员工表中的科室人员，该系统只统计科室人员信息。
+        emp = EmployeeInformation.objects.filter(bus_id=bus_id, att_type=1, is_job=1)
+        if len(emp) > 0:  # 判断这个员工是否属于员工表中的记录考勤的在职的科室人员，该系统只统计科室人员信息。
             # 取出加班列表值
             widget_value = data["data"]["formInfo"]["detailMap"]["_S_INT_OVERTIME_DETAILED"]["widgetValue"]
             # 可能有多行，循环取出

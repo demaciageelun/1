@@ -240,11 +240,19 @@ class EmployeeHoildayStatistics(models.Model):
     days = models.IntegerField(blank=True, null=True)
     weeks = models.IntegerField(blank=True, null=True)
     dates = models.DateField(blank=True, null=True, verbose_name="请假日期")
+    serial = models.CharField(blank=True, null=True, max_length=255, verbose_name="云之家流水号")
 
     class Meta:
         managed = False
         db_table = 'employee_hoilday_statistics'
         verbose_name = '请假信息统计表'
+
+
+go_out_type_choice = (
+    (1, "公干"),
+    (2, "出差"),
+
+)
 
 
 class EmployeeBustravelStatistics(models.Model):
@@ -257,6 +265,8 @@ class EmployeeBustravelStatistics(models.Model):
     days = models.IntegerField(blank=True, null=True)
     weeks = models.IntegerField(blank=True, null=True)
     dates = models.DateField(blank=True, null=True, verbose_name="出差日期")
+    serial = models.CharField(blank=True, null=True, max_length=255, verbose_name="云之家流水号")
+    go_out_type = models.IntegerField(blank=True, null=True, verbose_name="出门类型", choices=go_out_type_choice)
 
     class Meta:
         managed = False
