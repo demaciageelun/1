@@ -288,7 +288,7 @@ is_job_chioce = (
 
 
 class EmployeeInformation(models.Model):
-    bus_id = models.IntegerField(primary_key=True, verbose_name="企业工号")
+    bus_id = models.CharField(primary_key=True, max_length=255, verbose_name="企业工号")
     namse = models.CharField(max_length=255, verbose_name="员工姓名")
     dept = models.CharField(max_length=255, verbose_name="部门")
     positi = models.CharField(max_length=255, verbose_name="岗位")

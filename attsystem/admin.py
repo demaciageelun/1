@@ -152,6 +152,7 @@ class CheckInDetailAdmin(admin.ModelAdmin):
     list_filter = ["bus", "weeks", "check_date"]
     actions = ["get_check_data", "test"]
 
+
     def get_check_data(self, request, queryset):
         resp = getcheckdata.checkinDetail()
         self.message_user(request, resp)

@@ -8,7 +8,10 @@ urlpatterns = [
     path('backs/', views.backs, name='backs'),
     path('over/', views.over, name='over'),
     path('bustravel/', views.travel, name='travel'),
-    # path('test/', views.testdata, name='test'),
     path('hoiltest/', views.hoiltest, name='hoiltest'),
-    # path('empInfo/', views.empInfo, name='empInfo'),
+    path('overtest/', views.overtest, name='overtest'),
+    path('updateEmp/', views.updateEmp, name='updateEmp'),
+    path('checkdata/', views.checkdata, name='checkdata'),
+    path('daliy/', views.daliy, name='daliy'),
+    path('monthliy/', views.monthliy, name='monthliy'),
 ]

@@ -34,6 +34,41 @@ def calcDaliySta():
             check_data = CheckInDetail.objects.filter(bus_id=emps.bus_id, check_date=cals.times).order_by(
                 "checkin_time")
             # 刷卡数据去重
+            check_data_list = []
+            cut_list = []
+            for check_1 in check_data:
+                noon_time = time.mktime(time.strptime(str(check_1.check_date) + " 13:00:00", "%Y-%m-%d %H:%M:%S"))
+                check_data_list.append(check_1.checkin_time)
+                for check_2 in check_data:
+                    c1 = check_1.checkin_time
+                    c2 = check_2.checkin_time
+                    time1 = time.mktime(
+                        time.strptime(str(check_1.check_date) + " " + str(check_1.checkin_time), "%Y-%m-%d %H:%M:%S"))
+                    time2 = time.mktime(
+                        time.strptime(str(check_2.check_date) + " " + str(check_2.checkin_time), "%Y-%m-%d %H:%M:%S"))
+                    if abs(time1 - time2) < 180 and time1 != time2:
+                        if time1 < noon_time:
+                            if time1 > time2:
+                                if check_1.checkin_time not in cut_list:
+                                    cut_list.append(check_1.checkin_time)
+                            else:
+                                if check_2.checkin_time not in cut_list:
+                                    cut_list.append(check_2.checkin_time)
+                        else:
+                            if time1 > time2:
+                                if check_2.checkin_time not in cut_list:
+                                    cut_list.append(check_2.checkin_time)
+                            else:
+                                if check_1.checkin_time not in cut_list:
+                                    cut_list.append(check_1.checkin_time)
+            cut_list = list(set(cut_list))
+            for cut_d in cut_list:
+                check_data_list.remove(cut_d)
+
+
+            print(cals.times)
+            print(cut_list)
+            print(check_data_list)
 
             # 处理星期日和节假日。因为星期日和节假日不计迟到早退信息，只统计加班信息
             if cals.kinds == 3 or cals.kinds == 4:
@@ -47,9 +82,9 @@ def calcDaliySta():
                     # 写入每日数据表
                     EmployeeDaysStatistics.objects.update_or_create(
                         defaults={'bus_id': emps.bus_id,
-                                  'in_time': check_data[0].checkin_time if len(check_data) > 0 else None,
-                                  'out_time': check_data[len(check_data) - 1].checkin_time if len(
-                                      check_data) > 1 else None,
+                                  'in_time': check_data_list[0] if len(check_data_list) > 0 else None,
+                                  'out_time': check_data_list[len(check_data_list) - 1] if len(
+                                      check_data_list) > 1 else None,
                                   'over_in_time': over_data[0].overtime_start_time,
                                   'over_out_time': over_data[0].overtime_stop_time,
                                   'over_last_time': over_last_time,
@@ -141,16 +176,16 @@ def calcDaliySta():
                 # 根据实际刷卡时间和标定刷卡时间判断迟到、早退、缺勤。排除请假时长一天的，不考虑。
                 # 请假少于1天并且出差小于1天的，计算上下班缺卡，迟到早退等。
                 if holi_last_time < 1:
-                    if len(check_data) == 0:
+                    if len(check_data_list) == 0:
                         # 上下班都缺卡
                         EmployeeDaysStatistics.objects.filter(bus_id=emps.bus_id, cal_id=cals.id).update(
                             check_in_result=3, check_out_result=3)
-                    elif len(check_data) == 1:
+                    elif len(check_data_list) == 1:
                         # 判断是上班或者下班缺卡，并判断是否迟早或者早退
                         # 1、先判断该次刷卡为上班刷卡，还是下班刷卡，则另一次为缺卡。根据这次刷卡时间与两个标定刷卡时间的比值的绝对值判断，绝对值小的，就为该次刷卡。
                         # 2、这一次还要判断是否迟到早退。
                         judge_time = time.mktime(
-                            time.strptime(str(check_data[0].check_date) + " " + str(check_data[0].checkin_time),
+                            time.strptime(str(check_data[0].check_date) + " " + str(check_data_list[0]),
                                           "%Y-%m-%d %H:%M:%S"))
                         judge_check_intime = time.mktime(
                             time.strptime(str(check_data[0].check_date) + " " + str(check_intime),
@@ -167,10 +202,10 @@ def calcDaliySta():
                             # 判断下班是否早退
                             if judge_time >= judge_check_outtime:
                                 EmployeeDaysStatistics.objects.filter(bus_id=emps.bus_id, cal_id=cals.id).update(
-                                    check_out_result=1, out_time=check_data[0].checkin_time)
+                                    check_out_result=1, out_time=check_data_list[0])
                             else:
                                 EmployeeDaysStatistics.objects.filter(bus_id=emps.bus_id, cal_id=cals.id).update(
-                                    check_out_result=2, out_time=check_data[0].checkin_time,
+                                    check_out_result=2, out_time=check_data_list[0],
                                     leaveearly_time=(judge_check_outtime - judge_time) / 60)
                         # 这个时间是上班时间，则下班是缺卡，还要判断上班是否迟到
                         else:
@@ -179,19 +214,19 @@ def calcDaliySta():
                             # 判断上班是否迟到
                             if judge_check_intime - judge_time >= -60:
                                 EmployeeDaysStatistics.objects.filter(bus_id=emps.bus_id, cal_id=cals.id).update(
-                                    check_in_result=1, in_time=check_data[0].checkin_time)
+                                    check_in_result=1, in_time=check_data_list[0])
                             else:
                                 EmployeeDaysStatistics.objects.filter(bus_id=emps.bus_id, cal_id=cals.id).update(
-                                    check_in_result=2, in_time=check_data[0].checkin_time,
+                                    check_in_result=2, in_time=check_data_list[0],
                                     late_time=(judge_time - judge_check_intime - 60) / 60)
                     else:
                         # 判断上下班刷卡时间，并判断是上班或者下班缺卡，并判断是否迟早或者早退
                         judge_time1 = time.mktime(
-                            time.strptime(str(check_data[0].check_date) + " " + str(check_data[0].checkin_time),
+                            time.strptime(str(check_data[0].check_date) + " " + str(check_data_list[0]),
                                           "%Y-%m-%d %H:%M:%S"))
                         judge_time2 = time.mktime(
                             time.strptime(
-                                str(check_data[0].check_date) + " " + str(check_data[len(check_data) - 1].checkin_time),
+                                str(check_data[0].check_date) + " " + str(check_data_list[len(check_data_list) - 1]),
                                 "%Y-%m-%d %H:%M:%S"))
                         judge_check_intime = time.mktime(
                             time.strptime(str(check_data[0].check_date) + " " + str(check_intime),
@@ -202,27 +237,27 @@ def calcDaliySta():
                         # 正常签到
                         if judge_time1 <= judge_check_intime + 60 and judge_time2 >= judge_check_outtime:
                             EmployeeDaysStatistics.objects.filter(bus_id=emps.bus_id, cal_id=cals.id).update(
-                                check_in_result=1, check_out_result=1, in_time=check_data[0].checkin_time,
-                                out_time=check_data[len(check_data) - 1].checkin_time)
+                                check_in_result=1, check_out_result=1, in_time=check_data_list[0],
+                                out_time=check_data_list[len(check_data_list) - 1])
                         #     上班迟到，下班正常
                         elif judge_time1 > judge_check_intime + 60 and judge_time2 >= judge_check_outtime:
                             EmployeeDaysStatistics.objects.filter(bus_id=emps.bus_id, cal_id=cals.id).update(
-                                check_in_result=2, check_out_result=1, in_time=check_data[0].checkin_time,
-                                out_time=check_data[len(check_data) - 1].checkin_time,
+                                check_in_result=2, check_out_result=1, in_time=check_data_list[0],
+                                out_time=check_data_list[len(check_data_list) - 1],
                                 late_time=(judge_time1 - judge_check_intime - 60) / 60)
                         #     上班正常，下班早退
                         elif judge_time1 <= judge_check_intime + 60 and judge_time2 < judge_check_outtime:
                             check_out_result = 2
                             EmployeeDaysStatistics.objects.filter(bus_id=emps.bus_id, cal_id=cals.id).update(
-                                check_in_result=1, check_out_result=2, in_time=check_data[0].checkin_time,
-                                out_time=check_data[len(check_data) - 1].checkin_time,
+                                check_in_result=1, check_out_result=2, in_time=check_data_list[0],
+                                out_time=check_data_list[len(check_data_list) - 1],
                                 leaveearly_time=(judge_check_outtime - judge_time2) / 60)
                         #     上班迟到,下班早退
                         else:
                             check_out_result = 2
                             EmployeeDaysStatistics.objects.filter(bus_id=emps.bus_id, cal_id=cals.id).update(
-                                check_in_result=2, check_out_result=2, in_time=check_data[0].checkin_time,
-                                out_time=check_data[len(check_data) - 1].checkin_time,
+                                check_in_result=2, check_out_result=2, in_time=check_data_list[0],
+                                out_time=check_data_list[len(check_data_list) - 1],
                                 late_time=(judge_time1 - judge_check_intime - 60) / 60,
                                 leaveearly_time=(judge_check_outtime - judge_time2) / 60)
                 # 1判断是否有出差的，2判断出差结束时间是否大于等于下班刷卡时间3是否早退

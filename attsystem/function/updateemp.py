@@ -39,24 +39,25 @@ def getEmp():
         dept = datas['department']
         positi = datas['jobTitle']
         openid = datas['openId']
-        entry_date = "20" + str(bus_id[:2]) + "-" + str(bus_id[2:4]) + "-" + str(bus_id[4:6])
         if dept == "离职人员":
             is_job = 2
         else:
             is_job = 1
         # 根据bus_id是否为空判断是否为管建的人，管建的人不统计。
         if bus_id != "" and dept[:4] != "江苏管建" and str(bus_id[:6]) != "210732":
-            # # 根据bus_id判断是否有这个人，没有就新增，有就更新
+            entry_date = "20" + str(bus_id[:2]) + "-" + str(bus_id[2:4]) + "-" + str(bus_id[4:6])
+            # 根据bus_id判断是否有这个人，没有就新增，有就更新
             EmployeeInformation.objects.update_or_create(
                 defaults={
-                    'bus_id': bus_id,
+                    'bus_id': openid,
                     'namse': namse,
                     'dept': dept,
                     'positi': positi,
-                    'openid': openid,
+                    'openid': bus_id,
                     'is_job': is_job,
                     'entry_date': entry_date
                 },
-                bus_id=bus_id
+                bus_id=openid
             )
+            # EmployeeInformation.objects.filter(bus_id=openid).update(openid=str(bus_id))
     return "更新成功"

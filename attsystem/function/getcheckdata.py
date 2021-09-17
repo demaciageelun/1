@@ -64,7 +64,7 @@ def detail_data_inter(accessToken, data, idd_list, start):
             check_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(datas["time"] / 1000))
             try:
                 cid = CheckInDetail()
-                cid.bus_id = idd_list[datas['openId']]
+                cid.bus_id = datas['openId']
                 cid.check_date = check_time[:10]
                 cid.checkin_time = check_time[11:]
                 cid.weeks = datetime.datetime.strptime(check_time[:10], "%Y-%m-%d").weekday() + 1
