@@ -7,16 +7,17 @@ from .models import EmployeeInformation, CheckInDetail, EmployeeDaysStatistics
 from .function import decrypto
 import json
 
-from .function import holiday, overtime, bustravel, createmonthsta, testdata, updateemp, reportback, getcheckdata
+from .function import holiday, overtime, bustravel, createmonthsta, testdata, updateemp, reportback, getcheckdata,leavejob
 from .linshi import overtest as ot, holitest
 
 
 # Create your views here.
 def index(request):
-    createmonthsta.calcDaliySta()
+    # createmonthsta.calcDaliySta()
     # createmonthsta.monthStatic()
     # testdata.checkinDetail()
     # updateemp.getEmp()
+    print('test123')
     data1 = '{"success": "true"}'
     return HttpResponse(data1)
 
@@ -81,5 +82,11 @@ def daliy(request):
 
 def monthliy(request):
     createmonthsta.monthStatic()
+    data1 = '{"success": "true"}'
+    return HttpResponse(data1)
+
+def leaveinterface(request):
+    data = json.loads(decrypto.decrypto(request.body))
+    leavejob.leave(data)
     data1 = '{"success": "true"}'
     return HttpResponse(data1)

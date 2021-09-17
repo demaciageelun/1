@@ -14,4 +14,5 @@ urlpatterns = [
     path('checkdata/', views.checkdata, name='checkdata'),
     path('daliy/', views.daliy, name='daliy'),
     path('monthliy/', views.monthliy, name='monthliy'),
+    path('leaveinterface/', views.leaveinterface, name='leaveinterface'),
 ]
