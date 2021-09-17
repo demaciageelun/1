@@ -14,10 +14,10 @@ from .linshi import overtest, holitest
 # Create your views here.
 def index(request):
 
-    # createmonthsta.calcDaliySta()
-    createmonthsta.monthStatic()
+    createmonthsta.calcDaliySta()
+    # createmonthsta.monthStatic()
     # testdata.checkinDetail()
-    updateemp.getEmp()
+    # updateemp.getEmp()
     data1 = '{"success": "true"}'
     return HttpResponse(data1)
 

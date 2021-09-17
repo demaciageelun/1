@@ -191,6 +191,9 @@ class EmployeeDaysStatistics(models.Model):
     over_in_time = models.DateTimeField(blank=True, null=True, verbose_name="加班开始时间")
     over_out_time = models.DateTimeField(blank=True, null=True, verbose_name="加班结束时间")
     over_last_time = models.FloatField(blank=True, null=True, verbose_name="加班持续时长(小时)")
+    bustravel_start_time = models.TimeField(blank=True, null=True, verbose_name="出差开始时间")
+    bustravel_stop_time = models.TimeField(blank=True, null=True, verbose_name="出差结束时间")
+    bustravel_last_time = models.FloatField(blank=True, null=True, verbose_name="出差持续时间(天)")
     check_in_result = models.IntegerField(blank=True, null=True, verbose_name="上班签到结果",
                                           choices=check_in_result_choice)
     check_out_result = models.IntegerField(blank=True, null=True, verbose_name="下班签到结果",

@@ -4,7 +4,7 @@ import arrow
 from django.db.models import Q, Sum, Count
 
 from ..models import EmployeeInformation, EmployeeHoildayStatistics, Cal, CheckInDetail, EmployeeOvertimeStatistics, \
-    EmployeeDaysStatistics, EmployeeMonthStatistics
+    EmployeeDaysStatistics, EmployeeMonthStatistics, EmployeeBustravelStatistics
 import datetime
 
 
@@ -33,6 +33,8 @@ def calcDaliySta():
             # 第三步、获取刷卡数据，
             check_data = CheckInDetail.objects.filter(bus_id=emps.bus_id, check_date=cals.times).order_by(
                 "checkin_time")
+            # 刷卡数据去重
+
             # 处理星期日和节假日。因为星期日和节假日不计迟到早退信息，只统计加班信息
             if cals.kinds == 3 or cals.kinds == 4:
                 # 获取加班数据
@@ -135,7 +137,9 @@ def calcDaliySta():
                     EmployeeDaysStatistics.objects.filter(bus_id=emps.bus_id, cal_id=cals.id).update(act_times=1,
                                                                                                      judge_in_time=check_intime,
                                                                                                      judge_out_time=check_outtime)
+
                 # 根据实际刷卡时间和标定刷卡时间判断迟到、早退、缺勤。排除请假时长一天的，不考虑。
+                # 请假少于1天并且出差小于1天的，计算上下班缺卡，迟到早退等。
                 if holi_last_time < 1:
                     if len(check_data) == 0:
                         # 上下班都缺卡
@@ -208,21 +212,43 @@ def calcDaliySta():
                                 late_time=(judge_time1 - judge_check_intime - 60) / 60)
                         #     上班正常，下班早退
                         elif judge_time1 <= judge_check_intime + 60 and judge_time2 < judge_check_outtime:
+                            check_out_result = 2
                             EmployeeDaysStatistics.objects.filter(bus_id=emps.bus_id, cal_id=cals.id).update(
                                 check_in_result=1, check_out_result=2, in_time=check_data[0].checkin_time,
                                 out_time=check_data[len(check_data) - 1].checkin_time,
                                 leaveearly_time=(judge_check_outtime - judge_time2) / 60)
                         #     上班迟到,下班早退
                         else:
+                            check_out_result = 2
                             EmployeeDaysStatistics.objects.filter(bus_id=emps.bus_id, cal_id=cals.id).update(
                                 check_in_result=2, check_out_result=2, in_time=check_data[0].checkin_time,
                                 out_time=check_data[len(check_data) - 1].checkin_time,
                                 late_time=(judge_time1 - judge_check_intime - 60) / 60,
                                 leaveearly_time=(judge_check_outtime - judge_time2) / 60)
-    # 第四步、获取请假数据或者出差数据
-    # 第五步、获取加班信息
-    # 第六步、遍历人员每日信息，汇总成一整条数据，并写入月度汇总表
-    # 遍历出差数据，如果当日有出差数据，则将
+                # 1判断是否有出差的，2判断出差结束时间是否大于等于下班刷卡时间3是否早退
+                travel_data = EmployeeBustravelStatistics.objects.filter(bus_id=emps.bus_id, dates=cals.times)
+                # 一天出差几次
+                if len(travel_data) > 0:
+                    travel_data_list = []
+                    travel_last_time = 0
+                    for datas in travel_data:
+                        travel_data_list.append(datas.bustravel_start_time)
+                        travel_data_list.append(datas.bustravel_stop_time)
+                        travel_last_time += datas.bustravel_last_time
+                    travel_data_list.sort()
+                    EmployeeDaysStatistics.objects.filter(bus_id=emps.bus_id, cal_id=cals.id).update(
+                        bustravel_start_time=travel_data_list[0],
+                        bustravel_stop_time=travel_data_list[len(travel_data_list) - 1],
+                        bustravel_last_time=travel_last_time)
+                    # 出差结束时间是否大于等于下班刷卡时间并且下班缺卡，则设置为正常
+                    if travel_data_list[len(travel_data_list) - 1] > check_outtime and check_out_result == 2:
+                        EmployeeDaysStatistics.objects.filter(bus_id=emps.bus_id, cal_id=cals.id).update(
+                            check_out_result=1, leaveearly_time=None)
+
+                    # 第四步、获取请假数据或者出差数据
+                    # 第五步、获取加班信息
+                    # 第六步、遍历人员每日信息，汇总成一整条数据，并写入月度汇总表
+                    # 遍历出差数据，如果当日有出差数据，则将
 
 
 def monthStatic():

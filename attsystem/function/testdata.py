@@ -1,17 +1,33 @@
 import time
 
-check_times = ["2021-09-10 13:02:01", "2021-09-10 13:03:01"]
+check_times1 = ["2021-09-10 13:02:01", "2021-09-10 13:03:01", "2021-09-10 13:04:01", "2021-09-10 15:04:01"]
+check_times2 = ["2021-09-10 13:02:01", "2021-09-10 13:03:01", "2021-09-10 13:04:01", "2021-09-10 15:04:01"]
 # for i in check_times:
 #     for j in check_times:
 #         time1 = time.mktime(time.strptime(str(i), "%Y-%m-%d %H:%M:%S"))
 #         time2 = time.mktime(time.strptime(str(j), "%Y-%m-%d %H:%M:%S"))
-#         print(time1)
-#         print(time2)
+#         print(i)
+#         print(j)
 #         print(abs(time1 - time2))
-#         if abs(time1 - time2) < 120:
+#         if abs(time1 - time2) < 300:
 #             check_times.remove(i)
 # print(check_times)
+cut_list = []
 
-for index1 in range(len(check_times)):
-    for index2 in range(len(check_times)-1):
-        print(check_times[index2])
+for data1 in check_times1:
+    for data2 in check_times1:
+        time1 = time.mktime(time.strptime(str(data1), "%Y-%m-%d %H:%M:%S"))
+        time2 = time.mktime(time.strptime(str(data2), "%Y-%m-%d %H:%M:%S"))
+        noon_time = time.mktime(time.strptime(data1[:10] + " 13:00:00", "%Y-%m-%d %H:%M:%S"))
+        if abs(time1 - time2) < 300 and time1 != time2:
+            if time1 < noon_time:
+                if data2 not in cut_list:
+                    cut_list.append(data2)
+            else:
+                if data2 not in cut_list:
+                    cut_list.append(data1)
+# list去重
+list_data = list(set(cut_list))
+print(cut_list)
+print(list(set(cut_list)))
+# print(check_times2)
