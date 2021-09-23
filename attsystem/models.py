@@ -285,6 +285,10 @@ is_job_chioce = (
     (1, "在职"),
     (2, "已离职"),
 )
+is_office_chioce = (
+    (1, "科室人员"),
+    (2, "一线人员"),
+)
 
 
 class EmployeeInformation(models.Model):
@@ -301,6 +305,7 @@ class EmployeeInformation(models.Model):
     is_job = models.IntegerField(blank=True, null=True, verbose_name="在职状态", choices=is_job_chioce)
     entry_date = models.DateField(blank=True, null=True, verbose_name="入职日期")
     leave_date = models.DateField(blank=True, null=True, verbose_name="离职日期")
+    is_office = models.IntegerField(blank=True, null=True, verbose_name="人员分类", choices=is_office_chioce)
 
     def __str__(self):
         return self.namse

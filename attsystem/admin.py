@@ -10,13 +10,13 @@ from openpyxl import Workbook
 
 # Register your models here.
 class EmployeeInformationAdmin(admin.ModelAdmin):
-    list_display = ["bus_id", "namse", "dept", "positi", "time1", "time2", "time3", "time4", "att_type",
+    list_display = ["bus_id", "namse", "dept", "positi", "is_office", "time1", "time2", "time3", "time4", "att_type",
                     "is_job", "entry_date", "leave_date"]
     list_display_links = ["namse", "dept", "positi"]
     list_per_page = 20
-    search_fields = ["bus_id", "namse", "dept"]
-    list_filter = ["dept", "att_type", "is_job"]
-    list_editable = ["time1", "time2", "time3", "time4", "att_type", "is_job", "entry_date", "leave_date"]
+    search_fields = ["bus_id", "namse", "dept", ]
+    list_filter = ["dept", "att_type", "is_job","is_office"]
+    list_editable = ["time1", "time2", "time3", "time4", "att_type", "is_job", "entry_date", "leave_date", "is_office"]
     # 增加自定义按钮
     actions = ['update']
 
@@ -124,7 +124,8 @@ class EmployeeMonthStatisticsAdmin(admin.ModelAdmin):
 
 
 class CalAdmin(admin.ModelAdmin):
-    list_display = ["times", "kinds"]
+    list_display = ["times", "weeks", "kinds"]
+    list_filter = ["times", "weeks", "kinds"]
 
 
 class EmployeeHoildayStatisticsAdmin(admin.ModelAdmin):
@@ -151,7 +152,6 @@ class CheckInDetailAdmin(admin.ModelAdmin):
     list_display = ["bus", "check_date", "weeks", "checkin_time"]
     list_filter = ["bus", "weeks", "check_date"]
     actions = ["get_check_data", "test"]
-
 
     def get_check_data(self, request, queryset):
         resp = getcheckdata.checkinDetail()

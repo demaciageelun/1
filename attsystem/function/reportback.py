@@ -44,7 +44,7 @@ def reportbackInfor(data):
     print(data)
     try:
         # 取企业员工工号
-        bus_id = data["data"]["basicInfo"]["myPersonInfo"]["jobNo"]
+        bus_id = data["data"]["basicInfo"]["myPersonInfo"]["oid"]
         emp = EmployeeInformation.objects.filter(bus_id=bus_id, att_type=1, is_job=1)
         if len(emp) > 0:  # 判断这个员工是否属于员工表中的记录考勤的在职的科室人员，该系统只统计科室人员信息。
             # 取出人员信息，获取该人员的理论打卡时间，来计算每个请假日的请假时间。

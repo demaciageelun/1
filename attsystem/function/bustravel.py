@@ -17,7 +17,7 @@ def bustravelInfo(data):
     print(data)
     try:
         # 取企业员工工号
-        bus_id = data["data"]["basicInfo"]["myPersonInfo"]["jobNo"]
+        bus_id = data["data"]["basicInfo"]["myPersonInfo"]["oid"]
         emp = EmployeeInformation.objects.filter(bus_id=bus_id, att_type=1)
         if len(emp) > 0:  # 判断这个员工是否属于员工表中的科室人员，该系统只统计科室人员信息。
             # 取出人员信息，获取该人员的理论打卡时间，来计算每个出差日的出差时间。

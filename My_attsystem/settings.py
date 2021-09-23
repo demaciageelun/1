@@ -77,11 +77,11 @@ WSGI_APPLICATION = 'My_attsystem.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',  # 数据库引擎
-        'NAME': 'test',  # 数据库名称
-        'HOST': '127.0.0.1',  # 数据库地址，本机 ip 地址 127.0.0.1
+        'NAME': 'att_com',  # 数据库名称
+        'HOST': '192.168.19.29',  # 数据库地址，本机 ip 地址 127.0.0.1
         'PORT': 3306,  # 端口
-        'USER': 'root',  # 数据库用户名
-        'PASSWORD': '372169zw..',  # 数据库密码
+        'USER': 'att_com',  # 数据库用户名
+        'PASSWORD': 'xMakjTM5WFwp4zme',  # 数据库密码
     }
 }
 

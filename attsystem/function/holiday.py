@@ -43,7 +43,7 @@ def proLeaveInfor(data):
     print(data)
     try:
         # 取企业员工工号
-        bus_id = data["data"]["basicInfo"]["myPersonInfo"]["jobNo"]
+        bus_id = data["data"]["basicInfo"]["myPersonInfo"]["oid"]
         emp = EmployeeInformation.objects.filter(bus_id=bus_id, att_type=1, is_job=1)
         if len(emp) > 0:  # 判断这个员工是否属于员工表中的记录考勤的在职的科室人员，该系统只统计科室人员信息。
             # 取出人员信息，获取该人员的理论打卡时间，来计算每个请假日的请假时间。
@@ -97,7 +97,7 @@ def proLeaveInfor(data):
                                    date2.month, date2.day, date2.weekday() + 1, end_time[:10], serial)
 
                 # =1表示开始和结束是连续两天
-                elif sub_data == 1:
+                elif sub_data == 2:
                     # 开始那天调用一次函数
                     # 判断请假开始当天请假了多久
                     begin_leave_days = firstDay(time1, time2, time3, time4, begin_time)
