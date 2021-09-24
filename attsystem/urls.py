@@ -12,6 +12,7 @@ urlpatterns = [
     path('overtest/', views.overtest, name='overtest'),
     path('updateEmp/', views.updateEmp, name='updateEmp'),
     path('checkdata/', views.checkdata, name='checkdata'),
+    path('testcheckdata/', views.testcheckdata, name='testcheckdata'),
     path('daliy/', views.daliy, name='daliy'),
     path('monthliy/', views.monthliy, name='monthliy'),
     path('leaveinterface/', views.leaveinterface, name='leaveinterface'),
