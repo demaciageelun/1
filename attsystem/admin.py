@@ -2,6 +2,8 @@ import json
 import time
 from django.http import HttpResponse, FileResponse
 from django.contrib import admin
+from import_export.admin import ImportExportModelAdmin
+
 from attsystem.models import EmployeeInformation, EmployeeMonthStatistics, Cal, EmployeeHoildayStatistics, \
     EmployeeOvertimeStatistics, EmployeeBustravelStatistics, CheckInDetail, EmployeeDaysStatistics
 from .function import updateemp, getcheckdata
@@ -9,7 +11,7 @@ from openpyxl import Workbook
 
 
 # Register your models here.
-class EmployeeInformationAdmin(admin.ModelAdmin):
+class EmployeeInformationAdmin(ImportExportModelAdmin):
     list_display = ["bus_id", "namse", "dept", "positi", "is_office", "time1", "time2", "time3", "time4", "att_type",
                     "is_job", "entry_date", "leave_date"]
     list_display_links = ["namse", "dept", "positi"]
@@ -33,7 +35,7 @@ class EmployeeInformationAdmin(admin.ModelAdmin):
     update.confirm = '确定更新？'
 
 
-class EmployeeMonthStatisticsAdmin(admin.ModelAdmin):
+class EmployeeMonthStatisticsAdmin(ImportExportModelAdmin):
     list_display = ["bus", "dept", "positi", "years", "months", "attendance_days", "act_attendance_days",
                     "sat_attendance_days",
                     "sun_attendance_days",
@@ -123,45 +125,45 @@ class EmployeeMonthStatisticsAdmin(admin.ModelAdmin):
     # download.confirm = '确定下载？'
 
 
-class CalAdmin(admin.ModelAdmin):
+class CalAdmin(ImportExportModelAdmin):
     list_display = ["times", "weeks", "kinds"]
     list_filter = ["times", "weeks", "kinds"]
 
 
-class EmployeeHoildayStatisticsAdmin(admin.ModelAdmin):
+class EmployeeHoildayStatisticsAdmin(ImportExportModelAdmin):
     list_display = ["bus", "hoilday_type", "hoilday_start_time", "hoilday_stop_time", "hoilday_last_time", "dates"]
     raw_id_fields = ["bus"]
     list_filter = ["bus", "hoilday_type", "dates"]
 
 
-class EmployeeOvertimeStatisticsAdmin(admin.ModelAdmin):
+class EmployeeOvertimeStatisticsAdmin(ImportExportModelAdmin):
     list_display = ["bus", "overtime_type", "dates",
                     "weeks", "overtime_start_time", "overtime_stop_time", "overtime_last_time"]
     raw_id_fields = ["bus"]
     list_filter = ["bus", "overtime_type", "dates", "weeks"]
 
 
-class EmployeeBustravelStatisticsAdmin(admin.ModelAdmin):
+class EmployeeBustravelStatisticsAdmin(ImportExportModelAdmin):
     list_display = ["bus", "dates",
                     "weeks", "bustravel_start_time", "bustravel_stop_time", "bustravel_last_time", "go_out_type",
                     "serial"]
     raw_id_fields = ["bus"]
 
 
-class CheckInDetailAdmin(admin.ModelAdmin):
+class CheckInDetailAdmin(ImportExportModelAdmin):
     list_display = ["bus", "check_date", "weeks", "checkin_time"]
     list_filter = ["bus", "weeks", "check_date"]
-    actions = ["get_check_data", "test"]
+    # actions = ["get_check_data", "test"]
 
-    def get_check_data(self, request, queryset):
-        resp = getcheckdata.checkinDetail()
-        self.message_user(request, resp)
+    # def get_check_data(self, request, queryset):
+    #     resp = getcheckdata.checkinDetail()
+    #     self.message_user(request, resp)
 
-    get_check_data.short_description = '获取考勤数据'
-    # icon，参考element-ui icon与https://fontawesome.com
-    get_check_data.icon = 'el-icon-edit'
-    # 指定element-ui的按钮类型，参考https://element.eleme.cn/#/zh-CN/component/button
-    get_check_data.type = 'primary'
+    # get_check_data.short_description = '获取考勤数据'
+    # # icon，参考element-ui icon与https://fontawesome.com
+    # get_check_data.icon = 'el-icon-edit'
+    # # 指定element-ui的按钮类型，参考https://element.eleme.cn/#/zh-CN/component/button
+    # get_check_data.type = 'primary'
 
     def test(self, request, queryset):
         pass
@@ -174,7 +176,7 @@ class CheckInDetailAdmin(admin.ModelAdmin):
     test.acts_on_all = True
 
 
-class EmployeeDaysStatisticsAdmin(admin.ModelAdmin):
+class EmployeeDaysStatisticsAdmin(ImportExportModelAdmin):
     list_display = ["bus", "cal", "cal_weeks", "act_times", "in_time", "out_time", "judge_in_time", "judge_out_time",
                     "holi_in_time", "holi_out_time", "hoil_last_time",
                     "over_in_time", "over_out_time", "over_last_time", "bustravel_start_time", "bustravel_stop_time",

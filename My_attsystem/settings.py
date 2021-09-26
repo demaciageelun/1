@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     "simpleui",
+    "import_export",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'attsystem',
+    # 'smart_chart'
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -130,3 +132,5 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static1')
 SIMPLEUI_HOME_INFO = False
 SIMPLEUI_ANALYSIS = False
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
+# 导入导出
+IMPORT_EXPORT_USE_TRANSACTIONS = True
