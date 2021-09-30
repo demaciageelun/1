@@ -76,14 +76,14 @@ def checkdata(request):
 
 
 def daliy(request):
-    # createmonthsta.calcDaliySta()
-    data1 = createmonthsta.calcDaliySta()
+    createmonthsta.calcDaliySta()
+    data1 = '{"success": "true"}'
     return HttpResponse(data1)
 
 
 def monthliy(request):
-    # createmonthsta.monthStatic()
-    data1 = createmonthsta.monthStatic()
+    createmonthsta.monthStatic()
+    data1 = '{"success": "true"}'
     return HttpResponse(data1)
 
 

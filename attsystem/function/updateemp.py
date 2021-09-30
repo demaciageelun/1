@@ -3,7 +3,6 @@ import time
 from urllib import parse
 import requests
 from ..models import EmployeeInformation
-import arrow
 
 
 def getEmp():
@@ -61,6 +60,8 @@ def getEmp():
                     'is_job': is_job,
                     'entry_date': entry_date,
                     'att_type': 1,
+                    'time1': '08:30',
+                    'time4': '17:30'
                 },
                 bus_id=bus_id
             )
