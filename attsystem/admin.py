@@ -12,11 +12,11 @@ from openpyxl import Workbook
 
 # Register your models here.
 class EmployeeInformationAdmin(ImportExportModelAdmin):
-    list_display = ["bus_id", "namse", "dept", "positi", "is_office", "time1", "time2", "time3", "time4", "att_type",
+    list_display = [ "namse", "dept", "positi", "is_office", "time1", "time2", "time3", "time4", "att_type",
                     "is_job", "entry_date", "leave_date"]
     list_display_links = ["namse", "dept", "positi"]
-    list_per_page = 20
-    search_fields = ["bus_id", "namse", "dept", ]
+    list_per_page = 5
+    search_fields = [ "namse", "dept", ]
     list_filter = ["dept", "att_type", "is_job","is_office"]
     list_editable = ["time1", "time2", "time3", "time4", "att_type", "is_job", "entry_date", "leave_date", "is_office"]
     # 增加自定义按钮
