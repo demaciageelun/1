@@ -70,20 +70,20 @@ def updateEmp(request):
 
 
 def checkdata(request):
-    getcheckdata.checkinDetail()
-    data1 = '{"success": "true"}'
+
+    data1 = getcheckdata.checkinDetail()
     return HttpResponse(data1)
 
 
 def daliy(request):
-    createmonthsta.calcDaliySta()
-    data1 = '{"success": "true"}'
+
+    data1 = createmonthsta.calcDaliySta()
     return HttpResponse(data1)
 
 
 def monthliy(request):
-    createmonthsta.monthStatic()
-    data1 = '{"success": "true"}'
+
+    data1 = createmonthsta.monthStatic()
     return HttpResponse(data1)
 
 

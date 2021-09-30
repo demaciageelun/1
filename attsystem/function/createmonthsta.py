@@ -285,7 +285,7 @@ def calcDaliySta():
                     # 第六步、遍历人员每日信息，汇总成一整条数据，并写入月度汇总表
                     # 遍历出差数据，如果当日有出差数据，则将
 
-
+    return '{"success": "true"}'
 def monthStatic():
     # 上个月的年和月
     date = arrow.now().shift(months=-1)
@@ -435,5 +435,5 @@ def monthStatic():
             bus_id=emps.bus_id,
             years=date.year,
             months=date.month,
-
         )
+    return '{"success": "true"}'
